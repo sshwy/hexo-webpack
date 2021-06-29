@@ -7,6 +7,7 @@ const logger = require('./logger').init(hexo)
 const getConfig = require('./config')
 
 const webpack = require('./webpack')
+const { DefinePlugin } = require('webpack')
 const mfs = require('./mfs')
 
 const bundledModules = new Set()
@@ -23,6 +24,9 @@ hexo.extend.generator.register('webpack', function () {
     .filter(Boolean)
     .map((webpackConfig) => webpack.installPlugins(
       [
+        new DefinePlugin({
+          HEXO_THEME_CONFIG: JSON.stringify(hexo.theme.config)
+        }),
         new webpack.ForEachModulePlugin(function ({ request }) {
           if (typeof request === 'string' && request.length > 0) { // may be undefined
             bundledModules.add(request)
